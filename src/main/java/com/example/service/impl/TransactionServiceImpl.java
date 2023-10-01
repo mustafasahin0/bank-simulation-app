@@ -97,6 +97,6 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<Transaction> findAllTransactions() {
-        return null;
+        return transactionRepository.findAll();
     }
 }
