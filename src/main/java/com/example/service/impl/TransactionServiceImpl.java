@@ -7,6 +7,7 @@ import com.example.exception.InSufficientBalanceException;
 import com.example.model.Account;
 import com.example.model.Transaction;
 import com.example.repository.AccountRepository;
+import com.example.repository.TransactionRepository;
 import com.example.service.TransactionService;
 import org.springframework.stereotype.Component;
 
@@ -19,9 +20,11 @@ import java.util.UUID;
 public class TransactionServiceImpl implements TransactionService {
 
     private final AccountRepository accountRepository;
+    private final TransactionRepository transactionRepository;
 
-    public TransactionServiceImpl(AccountRepository accountRepository) {
+    public TransactionServiceImpl(AccountRepository accountRepository, TransactionRepository transactionRepository) {
         this.accountRepository = accountRepository;
+        this.transactionRepository = transactionRepository;
     }
 
     @Override
@@ -38,6 +41,9 @@ public class TransactionServiceImpl implements TransactionService {
         executeBalanceAndUpdateIfRequired(amount, sender, receiver);
 
         // make transfer
+
+        Transaction transaction = Transaction.builder().amount(amount).sender(sender.getId()).receiver(receiver.getId()).createDate(creatationDate).message(message).build();
+        transactionRepository.save(transaction);
 
         return null;
     }
