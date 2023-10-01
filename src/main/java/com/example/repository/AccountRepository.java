@@ -15,4 +15,8 @@ public class AccountRepository {
         accountList.add(account);
         return account;
     }
+
+    public List<Account> findAll() {
+        return accountList;
+    }
 }
