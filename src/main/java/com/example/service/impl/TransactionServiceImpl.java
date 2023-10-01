@@ -1,6 +1,9 @@
 package com.example.service.impl;
 
+import com.example.enums.AccountType;
+import com.example.exception.AccountOwnerShipExpception;
 import com.example.exception.BadRequestException;
+import com.example.exception.InSufficientBalanceException;
 import com.example.model.Account;
 import com.example.model.Transaction;
 import com.example.repository.AccountRepository;
@@ -31,10 +34,36 @@ public class TransactionServiceImpl implements TransactionService {
          */
 
         validateAccount(sender, receiver);
+        checkAccountOwnerShip(sender, receiver);
+        executeBalanceAndUpdateIfRequired(amount, sender, receiver);
 
         // make transfer
 
         return null;
+    }
+
+    private void executeBalanceAndUpdateIfRequired(BigDecimal amount, Account sender, Account receiver) {
+        if (checkSenderBalance(sender, amount)) {
+            // update sender and receiver balance
+            sender.setBalance(sender.getBalance().subtract(amount));
+            receiver.setBalance(receiver.getBalance().add(amount));
+        } else {
+            throw new InSufficientBalanceException("Sender has insufficient balance");
+        }
+    }
+
+    private boolean checkSenderBalance(Account sender, BigDecimal amount) {
+        // Verify sender has enough balance to send
+        return sender.getBalance().compareTo(amount) >= 0;
+    }
+
+    private void checkAccountOwnerShip(Account sender, Account receiver) {
+        /*
+            - If one of the account is savings and user is not the same or else throw AccountOwnershipException
+         */
+        if ((sender.getAccountType().equals(AccountType.SAVING) || receiver.getAccountType().equals(AccountType.SAVING)) && !receiver.getUserId().equals(sender.getUserId())) {
+            throw new AccountOwnerShipExpception("If one of the account is savings and user must be the same for both.");
+        }
     }
 
     private void validateAccount(Account sender, Account receiver) {
@@ -43,12 +72,12 @@ public class TransactionServiceImpl implements TransactionService {
             - Does account ids are same?
             - Does account exists in the DB?
          */
-        if(sender == null || receiver == null) {
+        if (sender == null || receiver == null) {
             throw new BadRequestException("Sender or receiver cannot be null");
         }
 
         // if accounts are the same throw BadRequestException "Accounts needs to be different"
-        if(sender.getId().equals(receiver.getId())) {
+        if (sender.getId().equals(receiver.getId())) {
             throw new BadRequestException("Accounts needs to be different");
         }
 
