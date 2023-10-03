@@ -2,6 +2,7 @@ package com.example.controller;
 
 import com.example.service.AccountService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -15,7 +16,8 @@ public class AccountController {
     }
 
     @GetMapping("/index")
-    public String index() {
+    public String index(Model model) {
+        model.addAttribute("accountList", accountService.listAllAccount());
         return "/account/index";
     }
 }

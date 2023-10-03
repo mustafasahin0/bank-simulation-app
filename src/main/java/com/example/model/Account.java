@@ -1,5 +1,6 @@
 package com.example.model;
 
+import com.example.enums.AccountStatus;
 import com.example.enums.AccountType;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,7 @@ public class Account {
     private UUID id;
     private BigDecimal balance;
     private AccountType accountType;
+    private AccountStatus accountStatus;
     private Date creationDate;
     private Long userId;
 }
