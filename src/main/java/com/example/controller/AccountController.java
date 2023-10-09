@@ -1,10 +1,17 @@
 package com.example.controller;
 
+import com.example.enums.AccountType;
+import com.example.model.Account;
 import com.example.service.AccountService;
+import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.Date;
 
 @Controller
 public class AccountController {
@@ -20,4 +27,22 @@ public class AccountController {
         model.addAttribute("accountList", accountService.listAllAccount());
         return "/account/index";
     }
+
+    @GetMapping("/create-form")
+    public String getCreateForm(Model model) {
+        // We need to provide empty Account object to the view
+        model.addAttribute("account", Account.builder().build());
+        // We need to provide accountType enum to the view
+        model.addAttribute("accountTypes", AccountType.values());
+
+        return "/account/create-account";
+    }
+
+    @PostMapping("/create")
+    public String createAccount(@ModelAttribute Account account) {
+        accountService.createNewAccount(account.getBalance(), new Date(), account.getAccountType(), account.getUserId());
+
+        return "redirect:/index";
+    }
 }
+
