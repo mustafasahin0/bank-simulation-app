@@ -34,5 +34,13 @@ public class TransactionController {
         return "/transaction/make-transfer";
     }
 
+    @PostMapping("/make-transfer")
+    public String postMakeTransfer(@ModelAttribute Transaction transaction) {
+
+        transactionService.makeTransfer(accountService.findAccountById(transaction.getSender()), accountService.findAccountById(transaction.getReceiver()), transaction.getAmount(), Date.from(Instant.now()), transaction.getMessage());
+
+        return "redirect:/transaction/make-transfer";
+    }
+
 
 }
