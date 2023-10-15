@@ -38,6 +38,12 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public void deleteAccount(UUID id) {
-        accountRepository.remove(accountRepository.findById(id));
+        accountRepository.findById(id).setAccountStatus(AccountStatus.DELETED);
+    }
+
+    @Override
+    public void activateAccount(UUID id) {
+        accountRepository.findById(id).setAccountStatus(AccountStatus.ACTIVE);
+
     }
 }
