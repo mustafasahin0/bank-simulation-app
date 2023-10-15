@@ -12,4 +12,6 @@ public interface TransactionService {
     Transaction makeTransfer(Account sender, Account receiver, BigDecimal amount, Date creatationDate, String message);
 
     List<Transaction> findAllTransactions();
+
+    List<Transaction> last10Transactions();
 }
