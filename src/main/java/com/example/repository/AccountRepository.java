@@ -22,7 +22,11 @@ public class AccountRepository {
         return accountList;
     }
 
-    public void findById(UUID id) {
-        accountList.stream().filter(each -> each.getId().equals(id)).findFirst().orElseThrow(() -> new RecordNotFoundException("Account not found in DB"));
+    public Account findById(UUID id) {
+        return accountList.stream().filter(each -> each.getId().equals(id)).findFirst().orElseThrow(() -> new RecordNotFoundException("Account not found in DB"));
+    }
+
+    public void remove(Account account) {
+        accountList.remove(account);
     }
 }
