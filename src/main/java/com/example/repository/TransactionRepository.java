@@ -37,6 +37,5 @@ public class TransactionRepository {
         return transactionList.stream()
                 .filter(transaction -> transaction.getSender().equals(id) || transaction.getReceiver().equals(id))
                 .collect(Collectors.toList());
-
     }
 }
