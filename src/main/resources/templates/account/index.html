@@ -44,7 +44,7 @@
                         <td th:text="${account.creationDate}"></td>
                         <td th:if="${account.accountStatus.equals(account.accountStatus.ACTIVE)}"><a class="btn btn-danger" th:href="@{/delete/{id}(id=${account.id})}">Delete</a></td>
                         <td th:unless="${account.accountStatus.equals(account.accountStatus.ACTIVE)}"><a class="btn btn-primary" th:href="@{/activate/{id}(id=${account.id})}">Activate</a></td>
-                        <td><a class="btn btn-success" href="#">Account Transaction</a></td>
+                        <td><a class="btn btn-success" th:href="@{/transactions/{id}(id=${account.id})}">Account Transaction</a></td>
                     </tr>
                     </tbody>
                 </table>

@@ -56,25 +56,11 @@ public class TransactionController {
         return "redirect:/make-transfer";
     }
 
-    //TASK 5 MIN
-    //write a method, that gets the account id from index.html and print on the console.
-    //(work on index.html and here)
-    //transaction/{id}
-    //return transaction/transactions page
-    @GetMapping("/transaction/{id}")
-    public String getTransactionList(@PathVariable("id") UUID id, Model model){
-        //print the id
-        System.out.println(id);
+    @GetMapping("/transactions/{id}")
+    public String transactions(@PathVariable UUID id, Model model){
 
-        //get the list of transactions based on id and return as a model attribute
-        //TASK- complete the method(service and repository)
-        //findTransactionListById
-        model.addAttribute("transactions",transactionService.findTransactionListById(id));
+        model.addAttribute("transactions", transactionService.findTransactionListById(id));
 
         return "transaction/transactions";
     }
-
-    //go to transactions.html
-    //based on size of the transactions either show "No transactions yet" or transactions table
-
 }
