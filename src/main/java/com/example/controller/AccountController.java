@@ -3,9 +3,11 @@ package com.example.controller;
 import com.example.enums.AccountType;
 import com.example.model.Account;
 import com.example.service.AccountService;
+import jakarta.validation.Valid;
 import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -37,7 +39,14 @@ public class AccountController {
     }
 
     @PostMapping("/create")
-    public String createAccount(@ModelAttribute Account account) {
+    public String createAccount(@Valid @ModelAttribute Account account, BindingResult bindingResult, Model model) {
+
+        if(bindingResult.hasErrors()) {
+            model.addAttribute("accountTypes", AccountType.values());
+
+            return "/account/create-account";
+        }
+
         accountService.createNewAccount(account.getBalance(), new Date(), account.getAccountType(), account.getUserId());
 
         return "redirect:/index";
