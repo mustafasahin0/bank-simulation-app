@@ -5,6 +5,7 @@ import com.example.model.Account;
 import com.example.model.Transaction;
 import com.example.service.AccountService;
 import com.example.service.TransactionService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -45,7 +46,14 @@ public class TransactionController {
     //complete the transfer and return the same page
 
     @PostMapping("/transfer")
-    public String makeTransfer(@ModelAttribute("transaction") Transaction transaction){
+    public String makeTransfer(@Valid @ModelAttribute("transaction") Transaction transaction, BindingResult bindingResult, Model model){
+
+        if(bindingResult.hasErrors()) {
+            model.addAttribute("accounts",accountService.listAllAccount());
+            model.addAttribute("lastTransactions",transactionService.last10Transactions());
+
+            return "transaction/make-transfer";
+        }
 
         //I have UUID of  accounts but I need to provide Account object.
         //I need to find the Accounts based on the ID that I have and use as a parameter to complete makeTransfer method.

@@ -33,15 +33,25 @@
                         <label for="balance" class="col-form-label">Balance</label>
                         <input type="text" class="form-control" id="balance" placeholder="balance"
                                th:field="*{balance}">
+                        <span th:if="${#fields.hasErrors('balance')}">
+                            <ul class="alert alert-danger">
+                                <li th:each="error : ${#fields.errors('balance')}" th:text="${error}"></li>
+                            </ul>
+                        </span>
                     </div>
 
                     <div class="form-group blu-margin">
                         <label for="dropOperator" class="col-form-label">Account Type</label>
                         <select class="form-control" id="dropOperator" th:field="*{accountType}">
-                            <option value="0">Select Account</option>
+                            <option th:value="''" th:text="select"></option>
                             <option th:each="accountType : ${accountTypes}" th:value="${accountType.name()}"
                                     th:text="${accountType.name()}"></option>
                         </select>
+                        <span th:if="${#fields.hasErrors('accountType')}">
+                            <ul class="alert alert-danger">
+                                <li th:each="error : ${#fields.errors('accountType')}" th:text="${error}"></li>
+                            </ul>
+                        </span>
                     </div>
                 </div>
                 <div class="row">
