@@ -1,12 +1,12 @@
 package com.example.service.impl;
 
 
+import com.example.dto.AccountDTO;
 import com.example.enums.AccountType;
 import com.example.exception.AccountOwnershipException;
 import com.example.exception.BadRequestException;
 import com.example.exception.UnderConstructionException;
-import com.example.model.Account;
-import com.example.model.Transaction;
+import com.example.dto.TransactionDTO;
 import com.example.repository.AccountRepository;
 import com.example.repository.TransactionRepository;
 import com.example.service.TransactionService;
@@ -32,7 +32,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public Transaction makeTransfer(Account sender, Account receiver, BigDecimal amount, Date creationDate, String message) {
+    public TransactionDTO makeTransfer(AccountDTO sender, AccountDTO receiver, BigDecimal amount, Date creationDate, String message) {
 
         if(!underConstruction) {
         /*
@@ -49,16 +49,16 @@ public class TransactionServiceImpl implements TransactionService {
             after all validations are completed, and money is transferred, we need to create Transaction object and save/return it.
          */
 
-            Transaction transaction = Transaction.builder().amount(amount).sender(sender.getId()).receiver(receiver.getId())
+            TransactionDTO transactionDTO = TransactionDTO.builder().amount(amount).sender(sender.getId()).receiver(receiver.getId())
                     .createDate(creationDate).message(message).build();
             //save into the db and return it
-            return transactionRepository.save(transaction);
+            return transactionRepository.save(transactionDTO);
         }else {
             throw new UnderConstructionException("App is under construction, please try again later.");
         }
     }
 
-    private void executeBalanceAndUpdateIfRequired(BigDecimal amount, Account sender, Account receiver) {
+    private void executeBalanceAndUpdateIfRequired(BigDecimal amount, AccountDTO sender, AccountDTO receiver) {
         if(checkSenderBalance(sender,amount)){
             //update sender and receiver balance
             //100 - 80
@@ -71,13 +71,13 @@ public class TransactionServiceImpl implements TransactionService {
 
     }
 
-    private boolean checkSenderBalance(Account sender, BigDecimal amount) {
+    private boolean checkSenderBalance(AccountDTO sender, BigDecimal amount) {
         //verify sender has enough balance to send
         return sender.getBalance().subtract(amount).compareTo(BigDecimal.ZERO) >=0;
 
     }
 
-    private void checkAccountOwnership(Account sender, Account receiver) {
+    private void checkAccountOwnership(AccountDTO sender, AccountDTO receiver) {
         /*
             write an if statement that checks if one of the account is saving,
             and user of sender or receiver is not the same, throw AccountOwnershipException
@@ -88,7 +88,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
     }
 
-    private void validateAccount(Account sender, Account receiver) {
+    private void validateAccount(AccountDTO sender, AccountDTO receiver) {
         /*
             -if any of the account is null
             -if account ids are the same(same account)
@@ -114,17 +114,17 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> findAllTransaction() {
+    public List<TransactionDTO> findAllTransaction() {
         return transactionRepository.findAll();
     }
 
     @Override
-    public List<Transaction> last10Transactions() {
+    public List<TransactionDTO> last10Transactions() {
         return transactionRepository.findLast10Transactions();
     }
 
     @Override
-    public List<Transaction> findTransactionListById(UUID id) {
+    public List<TransactionDTO> findTransactionListById(UUID id) {
         return transactionRepository.findTransactionListByAccountId(id);
     }
 }

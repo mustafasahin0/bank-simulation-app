@@ -1,18 +1,8 @@
 package com.example;
 
-import com.example.enums.AccountType;
-import com.example.model.Account;
-import com.example.model.Transaction;
-import com.example.service.AccountService;
-import com.example.service.TransactionService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-
-import java.math.BigDecimal;
-import java.util.Date;
 
 @SpringBootApplication
 public class BankSimulationAppApplication {

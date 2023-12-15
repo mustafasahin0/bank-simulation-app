@@ -1,23 +1,23 @@
-package com.example.model;
+package com.example.dto;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.UUID;
 
-@Data
-@Builder
-public class Transaction {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class TransactionDTO {
     @NotNull
-    private UUID sender;
+    private AccountDTO sender;
     @NotNull
-    private UUID receiver;
+    private AccountDTO receiver;
     @NotNull
     @Positive
     private BigDecimal amount;

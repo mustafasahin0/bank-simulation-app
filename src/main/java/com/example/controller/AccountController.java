@@ -1,10 +1,9 @@
 package com.example.controller;
 
+import com.example.dto.AccountDTO;
 import com.example.enums.AccountType;
-import com.example.model.Account;
 import com.example.service.AccountService;
 import jakarta.validation.Valid;
-import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -31,15 +30,15 @@ public class AccountController {
     @GetMapping("/create-form")
     public String getCreateForm(Model model) {
         // We need to provide empty Account object to the view
-        model.addAttribute("account", Account.builder().build());
-        // We need to provide accountType enum to the view
-        model.addAttribute("accountTypes", AccountType.values());
+        model.addAttribute("account", new AccountDTO());
+//        // We need to provide accountType enum to the view
+//        model.addAttribute("accountTypes", AccountType.values());
 
         return "/account/create-account";
     }
 
     @PostMapping("/create")
-    public String createAccount(@Valid @ModelAttribute Account account, BindingResult bindingResult, Model model) {
+    public String createAccount(@Valid @ModelAttribute AccountDTO accountDTO, BindingResult bindingResult, Model model) {
 
         if(bindingResult.hasErrors()) {
             model.addAttribute("accountTypes", AccountType.values());
@@ -47,7 +46,7 @@ public class AccountController {
             return "/account/create-account";
         }
 
-        accountService.createNewAccount(account.getBalance(), new Date(), account.getAccountType(), account.getUserId());
+        accountService.createNewAccount(accountDTO.getBalance(), new Date(), accountDTO.getAccountType(), accountDTO.getUserId());
 
         return "redirect:/index";
     }

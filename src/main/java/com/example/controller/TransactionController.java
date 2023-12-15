@@ -1,8 +1,8 @@
 package com.example.controller;
 
 
-import com.example.model.Account;
-import com.example.model.Transaction;
+import com.example.dto.AccountDTO;
+import com.example.dto.TransactionDTO;
 import com.example.service.AccountService;
 import com.example.service.TransactionService;
 import jakarta.validation.Valid;
@@ -34,7 +34,7 @@ public class TransactionController {
 
         //what we need to provide to make transfer happen
         //we need to provide empty transaction object
-        model.addAttribute("transaction", Transaction.builder().build());
+        model.addAttribute("transaction", TransactionDTO.builder().build());
         //we need to provide list of all accounts
         model.addAttribute("accounts",accountService.listAllAccount());
         //we need list of last 10 transactions to fill the table(business logic is missing)
@@ -46,7 +46,7 @@ public class TransactionController {
     //complete the transfer and return the same page
 
     @PostMapping("/transfer")
-    public String makeTransfer(@Valid @ModelAttribute("transaction") Transaction transaction, BindingResult bindingResult, Model model){
+    public String makeTransfer(@Valid @ModelAttribute("transaction") TransactionDTO transactionDTO, BindingResult bindingResult, Model model){
 
         if(bindingResult.hasErrors()) {
             model.addAttribute("accounts",accountService.listAllAccount());
@@ -57,9 +57,9 @@ public class TransactionController {
 
         //I have UUID of  accounts but I need to provide Account object.
         //I need to find the Accounts based on the ID that I have and use as a parameter to complete makeTransfer method.
-        Account sender = accountService.retrieveById(transaction.getSender());
-        Account receiver = accountService.retrieveById(transaction.getReceiver());
-        transactionService.makeTransfer(sender,receiver,transaction.getAmount(),new Date(),transaction.getMessage());
+        AccountDTO sender = accountService.retrieveById(transactionDTO.getSender());
+        AccountDTO receiver = accountService.retrieveById(transactionDTO.getReceiver());
+        transactionService.makeTransfer(sender,receiver, transactionDTO.getAmount(),new Date(), transactionDTO.getMessage());
 
         return "redirect:/make-transfer";
     }
