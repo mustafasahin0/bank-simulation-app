@@ -10,7 +10,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
-import java.util.UUID;
 
 @Controller
 public class AccountController {
@@ -52,14 +51,14 @@ public class AccountController {
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteAccount(@PathVariable UUID id) {
+    public String deleteAccount(@PathVariable Long id) {
         accountService.deleteAccount(id);
 
         return "redirect:/index";
     }
 
     @GetMapping("/activate/{id}")
-    public String activateAccount(@PathVariable UUID id) {
+    public String activateAccount(@PathVariable Long id) {
         accountService.activateAccount(id);
 
         return "redirect:/index";
