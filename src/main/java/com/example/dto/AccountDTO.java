@@ -21,7 +21,7 @@ public class AccountDTO {
     private BigDecimal balance;
     @NotNull
     private AccountType accountType;
-    private Date creationDate;
+    private Date createDate;
     @NotNull
     private Long userId;
     private AccountStatus accountStatus;
