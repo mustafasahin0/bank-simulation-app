@@ -60,6 +60,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDTO retrieveById(Long id) {
-        return accountRepository.findAllById(id);
+        return accountMapper.convertToDTO(accountRepository.findById(id).get());
     }
 }
