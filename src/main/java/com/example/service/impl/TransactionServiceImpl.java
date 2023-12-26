@@ -9,6 +9,7 @@ import com.example.exception.UnderConstructionException;
 import com.example.dto.TransactionDTO;
 import com.example.repository.AccountRepository;
 import com.example.repository.TransactionRepository;
+import com.example.service.AccountService;
 import com.example.service.TransactionService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -22,11 +23,11 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Value("${under_construction}")
     private boolean underConstruction;
-    private final AccountRepository accountRepository;
+    private final AccountService accountService;
     private final TransactionRepository transactionRepository;
 
-    public TransactionServiceImpl(AccountRepository accountRepository, TransactionRepository transactionRepository) {
-        this.accountRepository = accountRepository;
+    public TransactionServiceImpl(AccountService accountService, TransactionRepository transactionRepository) {
+        this.accountService = accountService;
         this.transactionRepository = transactionRepository;
     }
 
@@ -108,7 +109,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     private void findAccountById(Long id) {
-        accountRepository.findById(id);
+        accountService.retrieveById(id);
     }
 
     @Override
