@@ -50,12 +50,12 @@ public class TransactionServiceImpl implements TransactionService {
             checkAccountOwnership(sender, receiver);
             executeBalanceAndUpdateIfRequired(amount, sender, receiver);
         /*
-            after all validations are completed, and money is transferred, we need to create Transaction object and save/return it.
+            after all validations are completed, and money is transferred, we need to create Transaction object and update/return it.
          */
 
-            Transaction transaction = new Transaction();
-            //save into the db and return it
-            return transactionMapper.convertToDTO(transactionRepository.save(transaction));
+            TransactionDTO transactionDTO = new TransactionDTO(sender, receiver, amount, message, creationDate);
+            //update into the db and return it
+            return transactionMapper.convertToDTO(transactionRepository.save(transactionMapper.convertToEntity(transactionDTO)));
         } else {
             throw new UnderConstructionException("App is under construction, please try again later.");
         }
@@ -68,10 +68,18 @@ public class TransactionServiceImpl implements TransactionService {
             sender.setBalance(sender.getBalance().subtract(amount));
             //50 + 80
             receiver.setBalance(receiver.getBalance().add(amount));
+
+            AccountDTO senderAccount = accountService.retrieveById(sender.getId());
+            senderAccount.setBalance(sender.getBalance());
+
+            AccountDTO receiverAccount = accountService.retrieveById(receiver.getId());
+            receiverAccount.setBalance(receiver.getBalance());
+
+            accountService.update(senderAccount);
+            accountService.update(receiverAccount);
         } else {
 //            throw new BalanceNotSufficientException("Balance is not enough for this transfer");
         }
-
     }
 
     private boolean checkSenderBalance(AccountDTO sender, BigDecimal amount) {

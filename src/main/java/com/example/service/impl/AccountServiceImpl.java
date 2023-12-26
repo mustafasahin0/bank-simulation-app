@@ -36,7 +36,7 @@ public class AccountServiceImpl implements AccountService {
         accountDTO.setAccountStatus(AccountStatus.ACTIVE);
         //we need to create Account object
 //        AccountDTO accountDTO = new AccountDTO();
-        //save into the database(repository)
+        //update into the database(repository)
         //return the object created
         accountRepository.save(accountMapper.convertToEntity(new AccountDTO()));
     }
@@ -54,7 +54,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository.findById(id).get();
         //set status to deleted
         account.setAccountStatus(AccountStatus.DELETED);
-        //save the updated account object
+        //update the updated account object
         accountRepository.save(account);
     }
 
@@ -75,5 +75,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<AccountDTO> listAllActiveAccount() {
         return accountRepository.findAllByAccountStatus(AccountStatus.ACTIVE).stream().map(accountMapper::convertToDTO).collect(Collectors.toList());
+    }
+
+    @Override
+    public void update(AccountDTO accountDTO) {
+        accountRepository.save(accountMapper.convertToEntity(accountDTO));
     }
 }

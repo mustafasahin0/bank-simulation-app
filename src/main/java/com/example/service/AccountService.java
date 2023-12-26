@@ -1,10 +1,7 @@
 package com.example.service;
 
 import com.example.dto.AccountDTO;
-import com.example.enums.AccountType;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 public interface AccountService {
@@ -20,4 +17,6 @@ public interface AccountService {
     AccountDTO retrieveById(Long id);
 
     List<AccountDTO> listAllActiveAccount();
+
+    void update(AccountDTO accountDTO);
 }
