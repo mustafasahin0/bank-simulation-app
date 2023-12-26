@@ -2,12 +2,13 @@ package com.example.service.impl;
 
 
 import com.example.dto.AccountDTO;
+import com.example.entity.Transaction;
 import com.example.enums.AccountType;
 import com.example.exception.AccountOwnershipException;
 import com.example.exception.BadRequestException;
 import com.example.exception.UnderConstructionException;
 import com.example.dto.TransactionDTO;
-import com.example.repository.AccountRepository;
+import com.example.mapper.TransactionMapper;
 import com.example.repository.TransactionRepository;
 import com.example.service.AccountService;
 import com.example.service.TransactionService;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class TransactionServiceImpl implements TransactionService {
@@ -25,16 +27,18 @@ public class TransactionServiceImpl implements TransactionService {
     private boolean underConstruction;
     private final AccountService accountService;
     private final TransactionRepository transactionRepository;
+    private final TransactionMapper transactionMapper;
 
-    public TransactionServiceImpl(AccountService accountService, TransactionRepository transactionRepository) {
+    public TransactionServiceImpl(AccountService accountService, TransactionRepository transactionRepository, TransactionMapper transactionMapper) {
         this.accountService = accountService;
         this.transactionRepository = transactionRepository;
+        this.transactionMapper = transactionMapper;
     }
 
     @Override
     public TransactionDTO makeTransfer(AccountDTO sender, AccountDTO receiver, BigDecimal amount, Date creationDate, String message) {
 
-        if(!underConstruction) {
+        if (!underConstruction) {
         /*
                -if sender or receiver is null ?
                -if sender and receiver is the same account ?
@@ -49,22 +53,22 @@ public class TransactionServiceImpl implements TransactionService {
             after all validations are completed, and money is transferred, we need to create Transaction object and save/return it.
          */
 
-            TransactionDTO transactionDTO = new TransactionDTO();
+            Transaction transaction = new Transaction();
             //save into the db and return it
-            return transactionRepository.save(transactionDTO);
-        }else {
+            return transactionMapper.convertToDTO(transactionRepository.save(transaction));
+        } else {
             throw new UnderConstructionException("App is under construction, please try again later.");
         }
     }
 
     private void executeBalanceAndUpdateIfRequired(BigDecimal amount, AccountDTO sender, AccountDTO receiver) {
-        if(checkSenderBalance(sender,amount)){
+        if (checkSenderBalance(sender, amount)) {
             //update sender and receiver balance
             //100 - 80
             sender.setBalance(sender.getBalance().subtract(amount));
             //50 + 80
             receiver.setBalance(receiver.getBalance().add(amount));
-        }else{
+        } else {
 //            throw new BalanceNotSufficientException("Balance is not enough for this transfer");
         }
 
@@ -72,7 +76,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     private boolean checkSenderBalance(AccountDTO sender, BigDecimal amount) {
         //verify sender has enough balance to send
-        return sender.getBalance().subtract(amount).compareTo(BigDecimal.ZERO) >=0;
+        return sender.getBalance().subtract(amount).compareTo(BigDecimal.ZERO) >= 0;
 
     }
 
@@ -81,8 +85,8 @@ public class TransactionServiceImpl implements TransactionService {
             write an if statement that checks if one of the account is saving,
             and user of sender or receiver is not the same, throw AccountOwnershipException
          */
-        if((sender.getAccountType().equals(AccountType.SAVING)||receiver.getAccountType().equals(AccountType.SAVING))
-                && !sender.getUserId().equals(receiver.getUserId())){
+        if ((sender.getAccountType().equals(AccountType.SAVING) || receiver.getAccountType().equals(AccountType.SAVING))
+                && !sender.getUserId().equals(receiver.getUserId())) {
             throw new AccountOwnershipException("If one of the account is saving, user must be the same for sender and receiver");
         }
     }
@@ -93,12 +97,12 @@ public class TransactionServiceImpl implements TransactionService {
             -if account ids are the same(same account)
             -f the account exist in the database (repository)
          */
-        if(sender==null||receiver==null){
+        if (sender == null || receiver == null) {
             throw new BadRequestException("Sender or Receiver cannot be null");
         }
 
         //if accounts are the same throw BadRequestException with saying accounts needs to be different
-        if(sender.getId().equals(receiver.getId())){
+        if (sender.getId().equals(receiver.getId())) {
             throw new BadRequestException("Sender account needs to be different than receiver account");
         }
 
@@ -114,16 +118,16 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public List<TransactionDTO> findAllTransaction() {
-        return transactionRepository.findAll();
+        return transactionRepository.findAll().stream().map(transactionMapper::convertToDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<TransactionDTO> last10Transactions() {
-        return transactionRepository.findLast10Transactions();
+        return transactionRepository.findLast10Transactions().stream().map(transactionMapper::convertToDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<TransactionDTO> findTransactionListById(Long id) {
-        return transactionRepository.findTransactionListByAccountId(id);
+        return transactionRepository.findTransactionListByAccountId(id).stream().map(transactionMapper::convertToDTO).collect(Collectors.toList());
     }
 }

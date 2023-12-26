@@ -5,7 +5,9 @@ import com.example.dto.TransactionDTO;
 import com.example.entity.Account;
 import com.example.entity.Transaction;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TransactionMapper {
 
     private final ModelMapper modelMapper;
