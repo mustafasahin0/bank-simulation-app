@@ -5,7 +5,6 @@ import com.example.dto.AccountDTO;
 import java.util.List;
 
 public interface AccountService {
-
     void createNewAccount(AccountDTO accountDTO);
 
     List<AccountDTO> listAllAccount();
@@ -18,5 +17,5 @@ public interface AccountService {
 
     List<AccountDTO> listAllActiveAccount();
 
-    void update(AccountDTO accountDTO);
+    void updateAccount(AccountDTO accountDTO);
 }

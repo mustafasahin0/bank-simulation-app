@@ -30,21 +30,19 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void createNewAccount(AccountDTO accountDTO) {
+    public void  createNewAccount(AccountDTO accountDTO) {
 
-        accountDTO.setCreateDate(new Date());
+        accountDTO.setCreationDate(new Date());
         accountDTO.setAccountStatus(AccountStatus.ACTIVE);
-        //we need to create Account object
-//        AccountDTO accountDTO = new AccountDTO();
-        //update into the database(repository)
-        //return the object created
-        accountRepository.save(accountMapper.convertToEntity(new AccountDTO()));
+        //save into the database(repository)
+        accountRepository.save(accountMapper.convertToEntity(accountDTO));
     }
 
     @Override
     public List<AccountDTO> listAllAccount() {
+        //we are getting list of account but we need to return list of AccountDTO
         List<Account> accountList = accountRepository.findAll();
-
+        //we are converting entity to dto list and return it
         return accountList.stream().map(accountMapper::convertToDTO).collect(Collectors.toList());
     }
 
@@ -54,7 +52,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository.findById(id).get();
         //set status to deleted
         account.setAccountStatus(AccountStatus.DELETED);
-        //update the updated account object
+        //save the updated account object
         accountRepository.save(account);
     }
 
@@ -64,21 +62,26 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountRepository.findById(id).get();
         //set status to active
         account.setAccountStatus(AccountStatus.ACTIVE);
+        //save the updated account object
         accountRepository.save(account);
     }
 
     @Override
     public AccountDTO retrieveById(Long id) {
+        //find the account entity based on id, then convert it dto and return it
         return accountMapper.convertToDTO(accountRepository.findById(id).get());
     }
 
     @Override
     public List<AccountDTO> listAllActiveAccount() {
-        return accountRepository.findAllByAccountStatus(AccountStatus.ACTIVE).stream().map(accountMapper::convertToDTO).collect(Collectors.toList());
+        //we need list of active account from repository
+        List<Account> accountList = accountRepository.findAllByAccountStatus(AccountStatus.ACTIVE);
+        //convert active accounts to accountDto and return it
+        return accountList.stream().map(accountMapper::convertToDTO).collect(Collectors.toList());
     }
 
     @Override
-    public void update(AccountDTO accountDTO) {
+    public void updateAccount(AccountDTO accountDTO) {
         accountRepository.save(accountMapper.convertToEntity(accountDTO));
     }
 }

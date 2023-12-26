@@ -18,8 +18,8 @@ public class TransactionDTO {
     private AccountDTO sender;
     @NotNull
     private AccountDTO receiver;
-    @NotNull
     @Positive
+    @NotNull
     private BigDecimal amount;
     @NotNull
     @Size(min = 2, max = 250)

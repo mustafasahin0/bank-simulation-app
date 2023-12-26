@@ -18,11 +18,19 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
-public class Account extends BaseEntity {
+public class Account {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private BigDecimal balance;
+
     @Enumerated(EnumType.STRING)
     private AccountType accountType;
+
+    @Column(columnDefinition = "TIMESTAMP")
+    private Date creationDate;
 
     private Long userId;
 

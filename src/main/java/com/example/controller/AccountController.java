@@ -13,52 +13,61 @@ import java.util.Date;
 
 @Controller
 public class AccountController {
-
-    AccountService accountService;
+    /*
+        write a method to return index.html including account list information
+        endpoint:index
+     */
+    private final AccountService accountService;
 
     public AccountController(AccountService accountService) {
         this.accountService = accountService;
     }
 
     @GetMapping("/index")
-    public String index(Model model) {
+    public String getIndexPage(Model model) {
+
         model.addAttribute("accountList", accountService.listAllAccount());
-        return "/account/index";
+        return "account/index";
     }
 
     @GetMapping("/create-form")
     public String getCreateForm(Model model) {
-        // We need to provide empty Account object to the view
-        model.addAttribute("account", new AccountDTO());
-//        // We need to provide accountType enum to the view
-//        model.addAttribute("accountTypes", AccountType.values());
 
-        return "/account/create-account";
+        //we need to provide empty account object
+        model.addAttribute("accountDTO", new AccountDTO());
+        //we need to provide accountType enum info for filling the dropdown options
+        model.addAttribute("accountTypes", AccountType.values());
+
+        return "account/create-account";
     }
 
+    //create a method to capture information from ui
+    //print them on the console.
+    //trigger createNewAccount method, create the account based on the user input.
+    //once user created return back to the index page.
     @PostMapping("/create")
-    public String createAccount(@Valid @ModelAttribute AccountDTO accountDTO, BindingResult bindingResult, Model model) {
+    public String createAccount(@Valid @ModelAttribute("accountDTO") AccountDTO accountDTO, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
 
-        if(bindingResult.hasErrors()) {
             model.addAttribute("accountTypes", AccountType.values());
-
-            return "/account/create-account";
+            return "account/create-account";
         }
-
+        System.out.println(accountDTO);
         accountService.createNewAccount(accountDTO);
-
         return "redirect:/index";
     }
 
     @GetMapping("/delete/{id}")
-    public String deleteAccount(@PathVariable Long id) {
+    public String getDeleteAccount(@PathVariable("id") Long id) {
+
         accountService.deleteAccount(id);
 
         return "redirect:/index";
     }
 
     @GetMapping("/activate/{id}")
-    public String activateAccount(@PathVariable Long id) {
+    public String activateAccount(@PathVariable("id") Long id) {
+
         accountService.activateAccount(id);
 
         return "redirect:/index";

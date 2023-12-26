@@ -6,6 +6,7 @@ import com.example.entity.Transaction;
 import com.example.enums.AccountType;
 import com.example.exception.AccountOwnershipException;
 import com.example.exception.BadRequestException;
+import com.example.exception.BalanceNotSufficientException;
 import com.example.exception.UnderConstructionException;
 import com.example.dto.TransactionDTO;
 import com.example.mapper.TransactionMapper;
@@ -22,7 +23,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class TransactionServiceImpl implements TransactionService {
-
     @Value("${under_construction}")
     private boolean underConstruction;
     private final AccountService accountService;
@@ -50,12 +50,13 @@ public class TransactionServiceImpl implements TransactionService {
             checkAccountOwnership(sender, receiver);
             executeBalanceAndUpdateIfRequired(amount, sender, receiver);
         /*
-            after all validations are completed, and money is transferred, we need to create Transaction object and update/return it.
+            after all validations are completed, and money is transferred, we need to create Transaction object and save/return it.
          */
 
             TransactionDTO transactionDTO = new TransactionDTO(sender, receiver, amount, message, creationDate);
-            //update into the db and return it
-            return transactionMapper.convertToDTO(transactionRepository.save(transactionMapper.convertToEntity(transactionDTO)));
+            //save into the db and return it
+            transactionRepository.save(transactionMapper.convertToEntity(transactionDTO));
+            return transactionDTO;
         } else {
             throw new UnderConstructionException("App is under construction, please try again later.");
         }
@@ -68,18 +69,23 @@ public class TransactionServiceImpl implements TransactionService {
             sender.setBalance(sender.getBalance().subtract(amount));
             //50 + 80
             receiver.setBalance(receiver.getBalance().add(amount));
+            /*  6MIN
+                get the dto from the database for both sender and receiver, update balance and save it.
+                create accountService updateAccount method and use it for saving.
+             */
+            //find sender by id
+            AccountDTO senderAcc = accountService.retrieveById(sender.getId());
+            senderAcc.setBalance(sender.getBalance());
+            accountService.updateAccount(senderAcc);
 
-            AccountDTO senderAccount = accountService.retrieveById(sender.getId());
-            senderAccount.setBalance(sender.getBalance());
+            AccountDTO receiverAcc = accountService.retrieveById(receiver.getId());
+            receiverAcc.setBalance(receiver.getBalance());
+            accountService.updateAccount(receiverAcc);
 
-            AccountDTO receiverAccount = accountService.retrieveById(receiver.getId());
-            receiverAccount.setBalance(receiver.getBalance());
-
-            accountService.update(senderAccount);
-            accountService.update(receiverAccount);
         } else {
-//            throw new BalanceNotSufficientException("Balance is not enough for this transfer");
+            throw new BalanceNotSufficientException("Balance is not enough for this transfer");
         }
+
     }
 
     private boolean checkSenderBalance(AccountDTO sender, BigDecimal amount) {
@@ -124,18 +130,27 @@ public class TransactionServiceImpl implements TransactionService {
         accountService.retrieveById(id);
     }
 
+    //TASK 8 MIN
     @Override
     public List<TransactionDTO> findAllTransaction() {
+        //get the transaction entity for all and return them as a list of TransactionDTo
         return transactionRepository.findAll().stream().map(transactionMapper::convertToDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<TransactionDTO> last10Transactions() {
-        return transactionRepository.findLast10Transactions().stream().map(transactionMapper::convertToDTO).collect(Collectors.toList());
+        //we want last 10 latest transaction
+        //write a query to get the result ofr last 10 transaction
+        List<Transaction> last10Transactions = transactionRepository.findLast10Transactions();
+        //convert to dto and return it
+        return last10Transactions.stream().map(transactionMapper::convertToDTO).collect(Collectors.toList());
     }
 
     @Override
     public List<TransactionDTO> findTransactionListById(Long id) {
-        return transactionRepository.findTransactionListByAccountId(id).stream().map(transactionMapper::convertToDTO).collect(Collectors.toList());
+        //get the list of transactions if account id is involved as a sender or receiver
+        List<Transaction> transactionList = transactionRepository.findTransactionListByAccountId(id);
+        //convert list of entity to dto and return it.
+        return transactionList.stream().map(transactionMapper::convertToDTO).collect(Collectors.toList());
     }
 }

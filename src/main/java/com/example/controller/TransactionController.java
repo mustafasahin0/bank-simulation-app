@@ -29,15 +29,15 @@ public class TransactionController {
 
 
     @GetMapping("/make-transfer")
-    public String getMakeTransfer(Model model){
+    public String getMakeTransfer(Model model) {
 
         //what we need to provide to make transfer happen
         //we need to provide empty transaction object
-        model.addAttribute("transaction", new TransactionDTO());
+        model.addAttribute("transactionDTO", new TransactionDTO());
         //we need to provide list of all accounts
-        model.addAttribute("accounts",accountService.listAllActiveAccount());
+        model.addAttribute("accounts", accountService.listAllActiveAccount());
         //we need list of last 10 transactions to fill the table(business logic is missing)
-        model.addAttribute("lastTransactions",transactionService.last10Transactions());
+        model.addAttribute("lastTransactions", transactionService.last10Transactions());
         return "transaction/make-transfer";
     }
 
@@ -45,12 +45,11 @@ public class TransactionController {
     //complete the transfer and return the same page
 
     @PostMapping("/transfer")
-    public String makeTransfer(@Valid @ModelAttribute("transaction") TransactionDTO transactionDTO, BindingResult bindingResult, Model model){
+    public String makeTransfer(@ModelAttribute("transactionDTO") @Valid TransactionDTO transactionDTO, BindingResult bindingResult, Model model) {
 
-        if(bindingResult.hasErrors()) {
-            model.addAttribute("accounts",accountService.listAllAccount());
-            model.addAttribute("lastTransactions",transactionService.last10Transactions());
-
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("accounts", accountService.listAllAccount());
+            model.addAttribute("lastTransactions", transactionService.last10Transactions());
             return "transaction/make-transfer";
         }
 
@@ -58,16 +57,30 @@ public class TransactionController {
         //I need to find the Accounts based on the ID that I have and use as a parameter to complete makeTransfer method.
         AccountDTO sender = accountService.retrieveById(transactionDTO.getSender().getId());
         AccountDTO receiver = accountService.retrieveById(transactionDTO.getReceiver().getId());
-        transactionService.makeTransfer(sender,receiver, transactionDTO.getAmount(),new Date(), transactionDTO.getMessage());
+        transactionService.makeTransfer(sender, receiver, transactionDTO.getAmount(), new Date(), transactionDTO.getMessage());
 
         return "redirect:/make-transfer";
     }
 
-    @GetMapping("/transactions/{id}")
-    public String transactions(@PathVariable Long id, Model model){
+    //TASK 5 MIN
+    //write a method, that gets the account id from index.html and print on the console.
+    //(work on index.html and here)
+    //transaction/{id}
+    //return transaction/transactions page
+    @GetMapping("/transaction/{id}")
+    public String getTransactionList(@PathVariable("id") Long id, Model model) {
+        //print the id
+        System.out.println(id);
 
+        //get the list of transactions based on id and return as a model attribute
+        //TASK- complete the method(service and repository)
+        //findTransactionListById
         model.addAttribute("transactions", transactionService.findTransactionListById(id));
 
         return "transaction/transactions";
     }
+
+    //go to transactions.html
+    //based on size of the transactions either show "No transactions yet" or transactions table
+
 }
