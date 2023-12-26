@@ -45,7 +45,7 @@ public class AccountController {
             return "/account/create-account";
         }
 
-        accountService.createNewAccount(accountDTO.getBalance(), new Date(), accountDTO.getAccountType(), accountDTO.getUserId());
+//        accountService.createNewAccount(accountDTO.getBalance(), new Date(), accountDTO.getAccountType(), accountDTO.getUserId());
 
         return "redirect:/index";
     }

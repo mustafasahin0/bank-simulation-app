@@ -10,6 +10,7 @@ import com.example.repository.AccountRepository;
 import com.example.service.AccountService;
 import org.springframework.stereotype.Component;
 
+import javax.security.auth.login.AccountNotFoundException;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -29,33 +30,41 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountDTO createNewAccount(BigDecimal balance, Date createDate, AccountType accountType, Long userId) {
+    public void createNewAccount(AccountDTO accountDTO) {
+
+        accountDTO.setCreateDate(new Date());
+        accountDTO.setAccountStatus(AccountStatus.ACTIVE);
         //we need to create Account object
 //        AccountDTO accountDTO = new AccountDTO();
         //save into the database(repository)
         //return the object created
-        return accountMapper.convertToDTO(accountRepository.save(new Account()));
+        accountRepository.save(accountMapper.convertToEntity(new AccountDTO()));
     }
 
     @Override
     public List<AccountDTO> listAllAccount() {
-        return accountRepository.findAll().stream().map(accountMapper::convertToDTO).collect(Collectors.toList());
+        List<Account> accountList = accountRepository.findAll();
+
+        return accountList.stream().map(accountMapper::convertToDTO).collect(Collectors.toList());
     }
 
     @Override
     public void deleteAccount(Long id) {
-        //find the account belongs the id
-        AccountDTO accountDTO = accountMapper.convertToDTO(accountRepository.findById(id).get());
+        //find the account object based on id
+        Account account = accountRepository.findById(id).get();
         //set status to deleted
-        accountDTO.setAccountStatus(AccountStatus.DELETED);
+        account.setAccountStatus(AccountStatus.DELETED);
+        //save the updated account object
+        accountRepository.save(account);
     }
 
     @Override
     public void activateAccount(Long id) {
         //find the account belongs the id
-        AccountDTO accountDTO = accountMapper.convertToDTO(accountRepository.findById(id).get());
+        Account account = accountRepository.findById(id).get();
         //set status to active
-        accountDTO.setAccountStatus(AccountStatus.ACTIVE);
+        account.setAccountStatus(AccountStatus.ACTIVE);
+        accountRepository.save(account);
     }
 
     @Override
