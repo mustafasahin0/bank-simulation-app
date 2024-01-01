@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class SecurityServiceImpl implements SecurityService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public SecurityServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -25,7 +25,5 @@ public class SecurityServiceImpl implements SecurityService {
         }
 
         return new UserPrincipal(user);
-
-
     }
 }
