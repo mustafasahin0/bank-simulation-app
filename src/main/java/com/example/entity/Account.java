@@ -2,9 +2,7 @@ package com.example.entity;
 
 import com.example.enums.AccountStatus;
 import com.example.enums.AccountType;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
