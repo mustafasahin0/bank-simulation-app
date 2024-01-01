@@ -1,0 +1,31 @@
+package com.example.service.impl;
+
+import com.example.entity.User;
+import com.example.entity.common.UserPrincipal;
+import com.example.repository.UserRepository;
+import com.example.service.SecurityService;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+public class SecurityServiceImpl implements SecurityService {
+
+    private UserRepository userRepository;
+
+    public SecurityServiceImpl(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        User user = userRepository.findByUserName(username);
+
+        if(user == null) {
+            throw new UsernameNotFoundException("This user does not exists.");
+        }
+
+        return new UserPrincipal(user);
+
+
+    }
+}
