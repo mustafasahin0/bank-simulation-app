@@ -26,5 +26,5 @@ public class User {
     @OneToOne
     private Role role;
 
-    private boolean isEnable;
+    private boolean isEnabled;
 }

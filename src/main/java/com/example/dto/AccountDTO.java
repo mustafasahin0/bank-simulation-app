@@ -2,10 +2,11 @@ package com.example.dto;
 
 import com.example.enums.AccountStatus;
 import com.example.enums.AccountType;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.Date;
 
